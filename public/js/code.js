@@ -1,4 +1,4 @@
-const urlBase = 'http://cop4331projectok.lol/LAMPAPI';
+const urlBase = 'yourDomain';//Replace with your own domain!
 const extension = 'php';
 
 let userId = 0;
