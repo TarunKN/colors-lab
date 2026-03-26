@@ -1,0 +1,64 @@
+@startuml activity
+
+title Colors Web Application - Activity Diagram
+
+skinparam activityBackgroundColor #e8f4f8
+skinparam activityBorderColor #2980b9
+skinparam arrowColor #2c3e50
+skinparam activityStartColor #2ecc71
+skinparam activityEndColor #e74c3c
+
+start
+
+:User visits index.html (Login Page);
+
+:Enter Username and Password;
+
+:Click "Do It" (Login Button);
+
+:Hash Password with MD5;
+
+:Send POST to Login.php\n{login, password};
+
+:Query Users table\nWHERE Login=? AND Password=?;
+
+if (User Found?) then (yes)
+    :Receive {id, firstName, lastName};
+    :Save Session Cookie\n(firstName, lastName, userId)\n[expires in 20 minutes];
+    :Redirect to color.html;
+    :Read Cookie on Page Load;
+    if (Cookie Valid?) then (no)
+        :Redirect back to index.html;
+        stop
+    else (yes)
+        fork
+            :Add Color Flow;
+            :Enter color name;
+            :Click "Add Color";
+            :Send POST to AddColor.php\n{color, userId};
+            :INSERT into Colors table;
+            :Display "Color has been added";
+        fork again
+            :Search Color Flow;
+            :Enter search term;
+            :Click "Search Color";
+            :Send POST to SearchColors.php\n{search, userId};
+            :SELECT from Colors\nWHERE Name LIKE ? AND UserID=?;
+            if (Colors Found?) then (yes)
+                :Display list of matching colors;
+            else (no)
+                :Display "No Records Found";
+            endif
+        end fork
+        :Click "Log Out";
+        :Clear Cookie (expire immediately);
+        :Redirect to index.html;
+    endif
+else (no)
+    :Display "User/Password combination incorrect";
+    :Stay on Login Page;
+endif
+
+stop
+
+@enduml

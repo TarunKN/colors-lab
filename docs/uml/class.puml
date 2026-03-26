@@ -1,0 +1,106 @@
+@startuml class
+
+title Colors Web Application - Class Diagram
+
+skinparam classBackgroundColor #eaf4fb
+skinparam classBorderColor #2980b9
+skinparam arrowColor #2c3e50
+skinparam classHeaderBackgroundColor #2980b9
+skinparam classHeaderFontColor #ffffff
+
+class "index.html" as IndexPage {
+    + loginName : input
+    + loginPassword : input
+    + loginResult : span
+    --
+    + doLogin() : void
+}
+
+class "color.html" as ColorPage {
+    + searchText : input
+    + colorText : input
+    + colorSearchResult : span
+    + colorAddResult : span
+    + colorList : p
+    --
+    + readCookie() : void
+    + searchColor() : void
+    + addColor() : void
+    + doLogout() : void
+}
+
+class "code.js" as CodeJS {
+    - urlBase : String
+    - extension : String
+    - userId : int
+    - firstName : String
+    - lastName : String
+    --
+    + doLogin() : void
+    + doLogout() : void
+    + addColor() : void
+    + searchColor() : void
+    + saveCookie() : void
+    + readCookie() : void
+}
+
+class "md5.js" as MD5JS {
+    --
+    + md5(password: String) : String
+}
+
+class "Login.php" as LoginAPI {
+    --
+    + getRequestInfo() : Array
+    + sendResultInfoAsJson(obj: String) : void
+    + returnWithError(err: String) : void
+    + returnWithInfo(firstName, lastName, id) : void
+}
+
+class "AddColor.php" as AddColorAPI {
+    --
+    + getRequestInfo() : Array
+    + sendResultInfoAsJson(obj: String) : void
+    + returnWithError(err: String) : void
+}
+
+class "SearchColors.php" as SearchAPI {
+    --
+    + getRequestInfo() : Array
+    + sendResultInfoAsJson(obj: String) : void
+    + returnWithError(err: String) : void
+    + returnWithInfo(searchResults: String) : void
+}
+
+class "Users Table" as UsersDB <<database>> {
+    + ID : INT (PK)
+    + firstName : VARCHAR
+    + lastName : VARCHAR
+    + Login : VARCHAR
+    + Password : VARCHAR
+}
+
+class "Colors Table" as ColorsDB <<database>> {
+    + ID : INT (PK)
+    + UserId : VARCHAR (FK)
+    + Name : VARCHAR
+}
+
+' Relationships
+IndexPage ..> CodeJS : uses
+ColorPage ..> CodeJS : uses
+CodeJS ..> MD5JS : uses (hash password)
+CodeJS ..> LoginAPI : POST /Login.php
+CodeJS ..> AddColorAPI : POST /AddColor.php
+CodeJS ..> SearchAPI : POST /SearchColors.php
+
+LoginAPI ..> UsersDB : SELECT (validate credentials)
+AddColorAPI ..> ColorsDB : INSERT (add color)
+SearchAPI ..> ColorsDB : SELECT LIKE (search colors)
+
+ColorsDB ..> UsersDB : UserId references Users.ID
+
+IndexPage --> ColorPage : redirects after login
+ColorPage --> IndexPage : redirects on logout\nor invalid cookie
+
+@enduml
