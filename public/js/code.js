@@ -1,6 +1,8 @@
 const urlBase = 'yourDomain';//Replace with your own domain!
 const extension = 'php';
 
+/* global md5 */
+
 let userId = 0;
 let firstName = "";
 let lastName = "";
@@ -143,7 +145,7 @@ function searchColor()
 
         let colorList = "";
 
-        let tmp = {search:srch,userId:userId};
+        let tmp = { color: newColor, userId: userId };
         let jsonPayload = JSON.stringify( tmp );
 
         let url = urlBase + '/SearchColors.' + extension;
