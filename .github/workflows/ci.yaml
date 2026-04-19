@@ -1,0 +1,56 @@
+name: CI — Lint & Test
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+jobs:
+  lint-and-test:
+    name: Lint + Jest (Node ${{ matrix.node-version }})
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+
+    steps:
+      # 1. Checkout source
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Set up Node.js (only needed for tests, NOT for running the LAMP app)
+      - name: Set up Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+
+      # 3. Install test dependencies
+      - name: Install dependencies
+        run: npm ci
+
+      # 4. Lint — fail fast on syntax errors before running tests
+      #    npx eslint is available without a local install via npx;
+      #    swap for your own lint command if you have one configured.
+      - name: Lint JavaScript source files
+        run: |
+          npx --yes eslint src/ --env node --parser-options=ecmaVersion:2020 \
+            --rule '{"no-undef":"error","no-unused-vars":"warn"}' \
+            --ext .js || true
+          # Note: '|| true' keeps lint non-blocking while you set up ESLint config.
+          # Remove '|| true' once .eslintrc is committed to the repo.
+
+      # 5. Run Jest (unit + integration)
+      - name: Run tests
+        run: npm test
+
+      # 6. Upload coverage report as a build artifact for review
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-node${{ matrix.node-version }}
+          path: coverage/
+          retention-days: 7
