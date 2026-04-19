@@ -1,15 +1,30 @@
 {
-  "name": "colors-lab",
+  "name": "colors-project",
   "version": "1.0.0",
-  "description": "COLORS is a full-stack web application built using the LAMP stack (Linux, Apache, MySQL, PHP). The application allows users to:",
+  "description": "A full-stack web application and Jest test suite for the Colors LAMP web application",
   "main": "index.js",
   "scripts": {
+    "test": "jest --coverage",
+    "test:unit": "jest tests/colorUtils.unit.test.js",
+    "test:integration": "jest tests/api.integration.test.js",
     "lint": "eslint \"**/*.js\" && stylelint \"**/*.css\" && htmlhint \"**/*.html\""
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testMatch": [
+      "**/tests/**/*.test.js"
+    ],
+    "coverageDirectory": "coverage",
+    "collectCoverageFrom": [
+      "src/**/*.js"
+    ]
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
     "eslint": "^8.57.1",
     "htmlhint": "^1.9.2",
     "stylelint": "^16.26.1",
