@@ -48,11 +48,11 @@ async function apiSearchColors(searchTerm, userId) {
 // ─── Mock setup ───────────────────────────────────────────────────────────────
 
 beforeEach(() => {
-  global.fetch = jest.fn();
+  global.fetch = jest.fn();  // Jest mock for fetch
 });
 
 afterEach(() => {
-  jest.resetAllMocks();
+  jest.resetAllMocks();  // Reset mocks after each test
 });
 
 function mockFetchResponse(body, status = 200) {

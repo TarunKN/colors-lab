@@ -1,4 +1,4 @@
-const urlBase = 'yourDomain';//Replace with your own domain!
+const urlBase = 'yourDomain'; // Replace with your own domain!
 const extension = 'php';
 
 /* global md5 */
@@ -7,178 +7,152 @@ let userId = 0;
 let firstName = "";
 let lastName = "";
 
-function doLogin()
-{
-        userId = 0;
-        firstName = "";
-        lastName = "";
+function doLogin() {
+    userId = 0;
+    firstName = "";
+    lastName = "";
 
-        let login = document.getElementById("loginName").value;
-        let password = document.getElementById("loginPassword").value;
-        var hash = md5( password );
+    let login = document.getElementById("loginName").value;
+    let password = document.getElementById("loginPassword").value;
+    var hash = md5(password);
 
-        document.getElementById("loginResult").innerHTML = "";
+    document.getElementById("loginResult").innerHTML = "";
 
-        let tmp = {login:login,password:hash};
-//      var tmp = {login:login,password:hash};
-        let jsonPayload = JSON.stringify( tmp );
+    let tmp = { login: login, password: hash };
+    let jsonPayload = JSON.stringify(tmp);
 
-        let url = urlBase + '/Login.' + extension;
+    let url = urlBase + '/Login.' + extension;
 
-        let xhr = new XMLHttpRequest();
-        xhr.open("POST", url, true);
-        xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8");
-        try
-	{
-                xhr.onreadystatechange = function()
-                {
-                        if (this.readyState == 4 && this.status == 200)
-                        {
-                                let jsonObject = JSON.parse( xhr.responseText );
-                                userId = jsonObject.id;
+    let xhr = new XMLHttpRequest();
+    xhr.open("POST", url, true);
+    xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8");
 
-                                if( userId < 1 )
-                                {
-                                        document.getElementById("loginResult").innerHTML = "User/Password combination incorrect";
-                                        return;
-                                }
+    try {
+        xhr.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                let jsonObject = JSON.parse(xhr.responseText);
+                userId = jsonObject.id;
 
-                                firstName = jsonObject.firstName;
-                                lastName = jsonObject.lastName;
-
-                                saveCookie();
-
-                                window.location.href = "color.html";
-                        }
-                };
-                xhr.send(jsonPayload);
-        }
-        catch(err)
-        {
-                document.getElementById("loginResult").innerHTML = err.message;
-        }
-	}
-
-function saveCookie()
-{
-        let minutes = 20;
-        let date = new Date();
-        date.setTime(date.getTime()+(minutes*60*1000));
-        document.cookie = "firstName=" + firstName + ",lastName=" + lastName + ",userId=" + userId + ";expires=" + date.toGMTString();
-}
-function readCookie()
-{
-        userId = -1;
-        let data = document.cookie;
-        let splits = data.split(",");
-        for(var i = 0; i < splits.length; i++)
-        {
-                let thisOne = splits[i].trim();
-                let tokens = thisOne.split("=");
-                if( tokens[0] == "firstName" )
-                {
-                        firstName = tokens[1];
+                if (userId < 1) {
+                    document.getElementById("loginResult").innerHTML = "User/Password combination incorrect";
+                    return;
                 }
-                else if( tokens[0] == "lastName" )
-                {
-                        lastName = tokens[1];
-                }
-		else if( tokens[0] == "userId" )
-                {
-                        userId = parseInt( tokens[1].trim() );
-                }
-        }
 
-        if( userId < 0 )
-        {
-                window.location.href = "index.html";
-        }
-        else
-        {
-//              document.getElementById("userName").innerHTML = "Logged in as " + firstName + " " + lastName;
-        }
+                firstName = jsonObject.firstName;
+                lastName = jsonObject.lastName;
+
+                saveCookie();
+
+                window.location.href = "color.html";
+            }
+        };
+        xhr.send(jsonPayload);
+    } catch (err) {
+        document.getElementById("loginResult").innerHTML = err.message;
+    }
 }
 
-function doLogout()
-{
-        userId = 0;
-        firstName = "";
-        lastName = "";
-        document.cookie = "firstName= ; expires = Thu, 01 Jan 1970 00:00:00 GMT";
+function saveCookie() {
+    let minutes = 20;
+    let date = new Date();
+    date.setTime(date.getTime() + (minutes * 60 * 1000));
+    document.cookie = "firstName=" + firstName + ",lastName=" + lastName + ",userId=" + userId + ";expires=" + date.toGMTString();
+}
+
+function readCookie() {
+    userId = -1;
+    let data = document.cookie;
+    let splits = data.split(",");
+    for (var i = 0; i < splits.length; i++) {
+        let thisOne = splits[i].trim();
+        let tokens = thisOne.split("=");
+        if (tokens[0] == "firstName") {
+            firstName = tokens[1];
+        }
+        else if (tokens[0] == "lastName") {
+            lastName = tokens[1];
+        }
+        else if (tokens[0] == "userId") {
+            userId = parseInt(tokens[1].trim());
+        }
+    }
+
+    if (userId < 0) {
         window.location.href = "index.html";
+    } else {
+        // Optionally, you can display the logged-in user's name here if needed
+        // document.getElementById("userName").innerHTML = "Logged in as " + firstName + " " + lastName;
+    }
 }
 
-function addColor()
-{
-        let newColor = document.getElementById("colorText").value;
-        document.getElementById("colorAddResult").innerHTML = "";
-	let tmp = { color: newColor, userId: userId };
-        let jsonPayload = JSON.stringify( tmp );
-
-        let url = urlBase + '/AddColor.' + extension;
-
-        let xhr = new XMLHttpRequest();
-        xhr.open("POST", url, true);
-        xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8");
-        try
-        {
-                xhr.onreadystatechange = function()
-                {
-                        if (this.readyState == 4 && this.status == 200)
-                        {
-                                document.getElementById("colorAddResult").innerHTML = "Color has been added";
-                        }
-                };
-                xhr.send(jsonPayload);
-        }
-        catch(err)
-        {
-                document.getElementById("colorAddResult").innerHTML = err.message;
-        }
-
+function doLogout() {
+    userId = 0;
+    firstName = "";
+    lastName = "";
+    document.cookie = "firstName= ; expires = Thu, 01 Jan 1970 00:00:00 GMT";
+    window.location.href = "index.html";
 }
 
-function searchColor()
-{
-	let srch = document.getElementById("searchText").value;
-        document.getElementById("colorSearchResult").innerHTML = "";
+function addColor() {
+    let newColor = document.getElementById("colorText").value;
+    document.getElementById("colorAddResult").innerHTML = "";
+    let tmp = { color: newColor, userId: userId };
+    let jsonPayload = JSON.stringify(tmp);
 
-        let colorList = "";
+    let url = urlBase + '/AddColor.' + extension;
 
-        let tmp = { color: srch, userId: userId };
-        let jsonPayload = JSON.stringify( tmp );
+    let xhr = new XMLHttpRequest();
+    xhr.open("POST", url, true);
+    xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8");
 
-        let url = urlBase + '/SearchColors.' + extension;
-
-        let xhr = new XMLHttpRequest();
-        xhr.open("POST", url, true);
-        xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8");
-        try
-        {
-                xhr.onreadystatechange = function()
-                {
-                        if (this.readyState == 4 && this.status == 200)
-                        {
-                                document.getElementById("colorSearchResult").innerHTML = "Color(s) has been retrieved";
-                                let jsonObject = JSON.parse( xhr.responseText );
-
-                                for( let i=0; i<jsonObject.results.length; i++ )
-                                {
-                                        colorList += jsonObject.results[i];
-                                        if( i < jsonObject.results.length - 1 )
-                                        {
-                                                colorList += "<br />\r\n";
-                                        }
-					}
-
-                                document.getElementsByTagName("p")[0].innerHTML = colorList;
-                        }
-                };
-                xhr.send(jsonPayload);
-        }
-        catch(err)
-        {
-                document.getElementById("colorSearchResult").innerHTML = err.message;
-        }
-
+    try {
+        xhr.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                document.getElementById("colorAddResult").innerHTML = "Color has been added";
+            }
+        };
+        xhr.send(jsonPayload);
+    } catch (err) {
+        document.getElementById("colorAddResult").innerHTML = err.message;
+    }
 }
+
+function searchColor() {
+    let srch = document.getElementById("searchText").value;
+    document.getElementById("colorSearchResult").innerHTML = "";
+
+    let colorList = "";
+
+    let tmp = { color: srch, userId: userId };
+    let jsonPayload = JSON.stringify(tmp);
+
+    let url = urlBase + '/SearchColors.' + extension;
+
+    let xhr = new XMLHttpRequest();
+    xhr.open("POST", url, true);
+    xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8");
+
+    try {
+        xhr.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                document.getElementById("colorSearchResult").innerHTML = "Color(s) has been retrieved";
+                let jsonObject = JSON.parse(xhr.responseText);
+
+                for (let i = 0; i < jsonObject.results.length; i++) {
+                    colorList += jsonObject.results[i];
+                    if (i < jsonObject.results.length - 1) {
+                        colorList += "<br />\r\n";
+                    }
+                }
+
+                document.getElementsByTagName("p")[0].innerHTML = colorList;
+            }
+        };
+        xhr.send(jsonPayload);
+    } catch (err) {
+        document.getElementById("colorSearchResult").innerHTML = err.message;
+    }
+}
+
+// Ensure that the readCookie function is called when the page loads
+window.onload = readCookie;

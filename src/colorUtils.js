@@ -58,7 +58,7 @@ function isValidColorName(color) {
   if (!color || typeof color !== "string") return false;
   const trimmed = color.trim();
   if (trimmed.length === 0) return false;
-  return /^[a-zA-Z0-9\s\-]+$/.test(trimmed);
+  return /^[a-zA-Z0-9\s-]+$/.test(trimmed);  // Fixed: Removed unnecessary escape for '-'
 }
 
 /**
@@ -83,7 +83,8 @@ function buildSearchPayload(searchTerm, userId) {
   return JSON.stringify({ color: searchTerm, userId: userId });
 }
 
-module.exports = {
+// Correct export to support ES Modules
+export {
   buildCookieValue,
   parseCookieString,
   isValidColorName,

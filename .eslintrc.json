@@ -1,11 +1,35 @@
 {
   "env": {
     "browser": true,
-    "es2021": true
+    "es2021": true,
+    "jest": true,
+    "node": true
   },
-  "extends": "eslint:recommended",
+  "extends": [
+    "eslint:recommended",
+    "plugin:jest/recommended"
+  ],
+  "parserOptions": {
+    "sourceType": "module"
+  },
+  "plugins": [
+    "jest"
+  ],
   "rules": {
-    "no-unused-vars": "warn",
-    "no-console": "off"
-  }
+    "no-undef": "off",
+    "no-unused-vars": "off",
+    "no-redeclare": ["error", { "builtinGlobals": true }]
+  },
+  "overrides": [
+    {
+      "files": ["coverage/**/*.css", "coverage/**/*.js", "coverage/**/*.html"],
+      "excludedFiles": "*.css"
+    },
+    {
+      "files": ["public/js/md5.js"],  // Exclude this specific file
+      "rules": {
+        "no-redeclare": "off"  // Disable the no-redeclare rule in this file
+      }
+    }
+  ]
 }
